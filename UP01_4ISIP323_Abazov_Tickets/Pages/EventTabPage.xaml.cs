@@ -20,13 +20,18 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
         {
             var items = DataGridEvent.SelectedItems.Cast<Event>().ToList();
             if (items.Count == 0) { Core.ShowError("Выберите записи для удаления!"); return; }
-            if (MessageBox.Show($"Удалить мероприятия ({items.Count} шт.)?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (MessageBox.Show($"Вы точно хотите удалить записи в количестве {items.Count} элементов?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 try
                 {
+                    foreach (var ev in items)
+                    {
+                        var relatedSales = Core.Context.TicketSale.Where(t => t.EventID == ev.ID).ToList();
+                        Core.Context.TicketSale.RemoveRange(relatedSales);
+                    }
                     Core.Context.Event.RemoveRange(items);
                     Core.Context.SaveChanges();
-                    Core.ShowInfo("Данные удалены!");
+                    Core.ShowInfo("Данные успешно удалены!");
                     DataGridEvent.ItemsSource = Core.Context.Event.ToList();
                 }
                 catch (Exception ex) { Core.ShowError(ex.Message); }

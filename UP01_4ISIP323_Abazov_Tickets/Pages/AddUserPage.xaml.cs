@@ -8,12 +8,16 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
     public partial class AddUserPage : Page
     {
         private User _currentUser = new User();
+        private string _originalPasswordHash;
 
         public AddUserPage(User selectedUser)
         {
             InitializeComponent();
             if (selectedUser != null)
+            {
                 _currentUser = selectedUser;
+                _originalPasswordHash = selectedUser.Password;
+            }
             DataContext = _currentUser;
         }
 
@@ -37,11 +41,16 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
                 return;
             }
 
-            if (_currentUser.ID == 0)
+            if (_currentUser.ID == 0 || _currentUser.Password != _originalPasswordHash)
             {
-                _currentUser.Password = Core.GetHash(_currentUser.Password);
-                Core.Context.User.Add(_currentUser);
+                if (_currentUser.Password.Length != 40)
+                {
+                    _currentUser.Password = Core.GetHash(_currentUser.Password);
+                }
             }
+
+            if (_currentUser.ID == 0)
+                Core.Context.User.Add(_currentUser);
 
             try
             {

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace UP01_4ISIP323_Abazov_Tickets.Pages
 {
@@ -27,7 +28,7 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
 
             if (user == null)
             {
-                Core.ShowError("Текущий пароль или Логин неверный!");
+                Core.ShowError("Текущий пароль/Логин неверный!");
                 return;
             }
 
@@ -48,5 +49,22 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
             Core.ShowInfo("Пароль успешно изменен!");
             NavigationService?.Navigate(new AuthPage());
         }
+
+        private void TbLogin_TextChanged(object sender, TextChangedEventArgs e) =>
+            HintLogin.Visibility = TbLogin.Text.Length > 0 ? Visibility.Hidden : Visibility.Visible;
+
+        private void CurrentPasswordBox_PasswordChanged(object sender, RoutedEventArgs e) =>
+            HintOldPass.Visibility = CurrentPasswordBox.Password.Length > 0 ? Visibility.Hidden : Visibility.Visible;
+
+        private void NewPasswordBox_PasswordChanged(object sender, RoutedEventArgs e) =>
+            HintNewPass.Visibility = NewPasswordBox.Password.Length > 0 ? Visibility.Hidden : Visibility.Visible;
+
+        private void ConfirmPasswordBox_PasswordChanged(object sender, RoutedEventArgs e) =>
+            HintConfirmPass.Visibility = ConfirmPasswordBox.Password.Length > 0 ? Visibility.Hidden : Visibility.Visible;
+
+        private void HintLogin_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) => TbLogin.Focus();
+        private void HintOldPass_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) => CurrentPasswordBox.Focus();
+        private void HintNewPass_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) => NewPasswordBox.Focus();
+        private void HintConfirmPass_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) => ConfirmPasswordBox.Focus();
     }
 }

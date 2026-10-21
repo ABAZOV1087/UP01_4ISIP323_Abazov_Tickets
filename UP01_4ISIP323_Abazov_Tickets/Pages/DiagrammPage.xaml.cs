@@ -4,8 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.DataVisualization.Charting;
-using Word = Microsoft.Office.Interop.Word;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace UP01_4ISIP323_Abazov_Tickets.Pages
 {
@@ -50,173 +48,198 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
 
         private void BtnExportWord_Click(object sender, RoutedEventArgs e)
         {
-            var allUsers = Core.Context.User.ToList();
-            var allCategories = Core.Context.Category.ToList();
-
-            var application = new Word.Application();
-            Word.Document document = application.Documents.Add();
-
-            foreach (var user in allUsers)
+            try
             {
-                Word.Paragraph userParagraph = document.Paragraphs.Add();
-                Word.Range userRange = userParagraph.Range;
-                userRange.Text = user.FIO;
-                userParagraph.set_Style("Заголовок 1");
-                userRange.ParagraphFormat.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
-                userRange.InsertParagraphAfter();
-                document.Paragraphs.Add();
+                var allUsers = Core.Context.User.ToList();
+                var allCategories = Core.Context.Category.ToList();
 
-                Word.Paragraph tableParagraph = document.Paragraphs.Add();
-                Word.Range tableRange = tableParagraph.Range;
-                Word.Table paymentsTable = document.Tables.Add(tableRange, allCategories.Count() + 1, 2);
-                paymentsTable.Borders.InsideLineStyle = paymentsTable.Borders.OutsideLineStyle = Word.WdLineStyle.wdLineStyleSingle;
-                paymentsTable.Range.Cells.VerticalAlignment = Word.WdCellVerticalAlignment.wdCellAlignVerticalCenter;
+                Type wordType = Type.GetTypeFromProgID("Word.Application");
+                if (wordType == null) { Core.ShowError("Microsoft Word не установлен!"); return; }
 
-                Word.Range cellRange;
-                cellRange = paymentsTable.Cell(1, 1).Range;
-                cellRange.Text = "Категория мероприятия";
-                cellRange = paymentsTable.Cell(1, 2).Range;
-                cellRange.Text = "Сумма покупок билетов";
-                paymentsTable.Rows[1].Range.Font.Name = "Times New Roman";
-                paymentsTable.Rows[1].Range.Font.Size = 14;
-                paymentsTable.Rows[1].Range.Bold = 1;
-                paymentsTable.Rows[1].Range.ParagraphFormat.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                dynamic application = Activator.CreateInstance(wordType);
+                dynamic document = application.Documents.Add();
 
-                for (int i = 0; i < allCategories.Count(); i++)
+                foreach (var user in allUsers)
                 {
-                    var currentCategory = allCategories[i];
-                    cellRange = paymentsTable.Cell(i + 2, 1).Range;
-                    cellRange.Text = currentCategory.Name;
-                    cellRange.Font.Name = "Times New Roman";
-                    cellRange.Font.Size = 12;
+                    dynamic userParagraph = document.Paragraphs.Add();
+                    dynamic userRange = userParagraph.Range;
+                    userRange.Text = user.FIO;
+                    userRange.Font.Name = "Times New Roman";
+                    userRange.Font.Size = 16;
+                    userRange.Font.Bold = 1;
+                    userRange.ParagraphFormat.Alignment = 1;
+                    userRange.InsertParagraphAfter();
+                    document.Paragraphs.Add();
 
-                    cellRange = paymentsTable.Cell(i + 2, 2).Range;
-                    decimal sum = user.TicketSale.ToList()
-                        .Where(u => u.CategoryID == currentCategory.ID)
-                        .Sum(u => u.Num * u.Price);
-                    cellRange.Text = sum.ToString("N2") + " руб.";
-                    cellRange.Font.Name = "Times New Roman";
-                    cellRange.Font.Size = 12;
+                    dynamic tableParagraph = document.Paragraphs.Add();
+                    dynamic tableRange = tableParagraph.Range;
+                    dynamic paymentsTable = document.Tables.Add(tableRange, allCategories.Count() + 1, 2);
+                    paymentsTable.Borders.InsideLineStyle = 1;
+                    paymentsTable.Borders.OutsideLineStyle = 1;
+                    paymentsTable.Range.Cells.VerticalAlignment = 1;
+
+                    dynamic cellRange = paymentsTable.Cell(1, 1).Range;
+                    cellRange.Text = "Категория";
+                    cellRange = paymentsTable.Cell(1, 2).Range;
+                    cellRange.Text = "Сумма расходов";
+
+                    paymentsTable.Rows[1].Range.Font.Name = "Times New Roman";
+                    paymentsTable.Rows[1].Range.Font.Size = 14;
+                    paymentsTable.Rows[1].Range.Bold = 1;
+                    paymentsTable.Rows[1].Range.ParagraphFormat.Alignment = 1;
+
+                    for (int i = 0; i < allCategories.Count(); i++)
+                    {
+                        var currentCategory = allCategories[i];
+                        cellRange = paymentsTable.Cell(i + 2, 1).Range;
+                        cellRange.Text = currentCategory.Name;
+                        cellRange.Font.Name = "Times New Roman";
+                        cellRange.Font.Size = 12;
+
+                        cellRange = paymentsTable.Cell(i + 2, 2).Range;
+                        decimal sum = user.TicketSale.ToList()
+                            .Where(u => u.CategoryID == currentCategory.ID)
+                            .Sum(u => u.Num * u.Price);
+                        cellRange.Text = sum.ToString("N2") + " руб.";
+                        cellRange.Font.Name = "Times New Roman";
+                        cellRange.Font.Size = 12;
+                    }
+                    document.Paragraphs.Add();
+
+                    TicketSale maxPayment = user.TicketSale.OrderByDescending(u => u.Price * u.Num).FirstOrDefault();
+                    if (maxPayment != null)
+                    {
+                        dynamic maxPaymentParagraph = document.Paragraphs.Add();
+                        dynamic maxPaymentRange = maxPaymentParagraph.Range;
+                        maxPaymentRange.Text = $"Самый дорогостоящий платеж - {maxPayment.Name} за {(maxPayment.Price * maxPayment.Num).ToString("N2")} руб. от {maxPayment.Date.ToString("dd.MM.yyyy")}";
+                        maxPaymentRange.Font.Name = "Times New Roman";
+                        maxPaymentRange.Font.Size = 13;
+                        maxPaymentRange.Font.Bold = 1;
+                        maxPaymentRange.Font.Color = 128;
+                        maxPaymentRange.InsertParagraphAfter();
+                    }
+                    document.Paragraphs.Add();
+
+                    TicketSale minPayment = user.TicketSale.OrderBy(u => u.Price * u.Num).FirstOrDefault();
+                    if (minPayment != null)
+                    {
+                        dynamic minPaymentParagraph = document.Paragraphs.Add();
+                        dynamic minPaymentRange = minPaymentParagraph.Range;
+                        minPaymentRange.Text = $"Самый дешевый платеж - {minPayment.Name} за {(minPayment.Price * minPayment.Num).ToString("N2")} руб. от {minPayment.Date.ToString("dd.MM.yyyy")}";
+                        minPaymentRange.Font.Name = "Times New Roman";
+                        minPaymentRange.Font.Size = 13;
+                        minPaymentRange.Font.Bold = 1;
+                        minPaymentRange.Font.Color = 32768;
+                        minPaymentRange.InsertParagraphAfter();
+                    }
+
+                    if (user != allUsers.LastOrDefault())
+                        document.Words.Last.InsertBreak(7);
                 }
-                document.Paragraphs.Add();
 
-                TicketSale maxSale = user.TicketSale.OrderByDescending(u => u.Price * u.Num).FirstOrDefault();
-                if (maxSale != null)
+                foreach (dynamic section in document.Sections)
                 {
-                    Word.Paragraph maxPaymentParagraph = document.Paragraphs.Add();
-                    Word.Range maxPaymentRange = maxPaymentParagraph.Range;
-                    maxPaymentRange.Text = $"Самая дорогая покупка билетов - {maxSale.Name} за {(maxSale.Price * maxSale.Num).ToString("N2")} руб. от {maxSale.Date.ToString("dd.MM.yyyy")}";
-                    maxPaymentRange.Font.Color = Word.WdColor.wdColorDarkRed;
-                    maxPaymentRange.InsertParagraphAfter();
-                }
-                document.Paragraphs.Add();
+                    dynamic footer = section.Footers[1];
+                    footer.PageNumbers.Add(1);
 
-                TicketSale minSale = user.TicketSale.OrderBy(u => u.Price * u.Num).FirstOrDefault();
-                if (minSale != null)
-                {
-                    Word.Paragraph minPaymentParagraph = document.Paragraphs.Add();
-                    Word.Range minPaymentRange = minPaymentParagraph.Range;
-                    minPaymentRange.Text = $"Самая дешевая покупка билетов - {minSale.Name} за {(minSale.Price * minSale.Num).ToString("N2")} руб. от {minSale.Date.ToString("dd.MM.yyyy")}";
-                    minPaymentRange.Font.Color = Word.WdColor.wdColorDarkGreen;
-                    minPaymentRange.InsertParagraphAfter();
+                    dynamic headerRange = section.Headers[1].Range;
+                    headerRange.ParagraphFormat.Alignment = 1;
+                    headerRange.Font.ColorIndex = 1;
+                    headerRange.Font.Size = 10;
+                    headerRange.Text = DateTime.Now.ToString("dd/MM/yyyy");
                 }
 
-                if (user != allUsers.LastOrDefault())
-                    document.Words.Last.InsertBreak(Word.WdBreakType.wdPageBreak);
+                application.Visible = true;
+                string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                document.SaveAs2(Path.Combine(desktop, "Payments.docx"));
+                document.SaveAs2(Path.Combine(desktop, "Payments.pdf"), 17);
             }
-
-            foreach (Word.Section section in document.Sections)
+            catch (Exception ex)
             {
-                Word.HeaderFooter footer = section.Footers[Word.WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                footer.PageNumbers.Add(Word.WdPageNumberAlignment.wdAlignPageNumberCenter);
-
-                Word.Range headerRange = section.Headers[Word.WdHeaderFooterIndex.wdHeaderFooterPrimary].Range;
-                headerRange.ParagraphFormat.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
-                headerRange.Font.ColorIndex = Word.WdColorIndex.wdBlack;
-                headerRange.Font.Size = 10;
-                headerRange.Text = DateTime.Now.ToString("dd/MM/yyyy");
+                Core.ShowError("Ошибка выгрузки в Word: " + ex.Message);
             }
-
-            application.Visible = true;
-            string docxPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TicketSalesReport.docx");
-            string pdfPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TicketSalesReport.pdf");
-            document.SaveAs2(docxPath);
-            document.SaveAs2(pdfPath, Word.WdExportFormat.wdExportFormatPDF);
         }
 
         private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
         {
-            var allUsers = Core.Context.User.OrderBy(u => u.FIO).ToList();
-
-            var application = new Excel.Application();
-            application.SheetsInNewWorkbook = allUsers.Count();
-            Excel.Workbook workbook = application.Workbooks.Add(Type.Missing);
-
-            for (int i = 0; i < allUsers.Count(); i++)
+            try
             {
-                int startRowIndex = 1;
-                Excel.Worksheet worksheet = application.Worksheets.Item[i + 1];
-                worksheet.Name = allUsers[i].FIO.Length > 30 ? allUsers[i].FIO.Substring(0, 30) : allUsers[i].FIO;
+                var allUsers = Core.Context.User.OrderBy(u => u.FIO).ToList();
+                Type excelType = Type.GetTypeFromProgID("Excel.Application");
+                if (excelType == null) { Core.ShowError("Microsoft Excel не установлен!"); return; }
 
-                worksheet.Cells[1][startRowIndex] = "Дата покупки";
-                worksheet.Cells[2][startRowIndex] = "Мероприятие";
-                worksheet.Cells[3][startRowIndex] = "Цена билета";
-                worksheet.Cells[4][startRowIndex] = "Количество";
-                worksheet.Cells[5][startRowIndex] = "Сумма";
+                dynamic application = Activator.CreateInstance(excelType);
+                application.SheetsInNewWorkbook = allUsers.Count();
+                dynamic workbook = application.Workbooks.Add();
 
-                Excel.Range colHeaderRange = worksheet.Range[worksheet.Cells[1][1], worksheet.Cells[5][1]];
-                colHeaderRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-                colHeaderRange.Font.Bold = true;
-                startRowIndex++;
-
-                var userCategories = allUsers[i].TicketSale.OrderBy(u => u.Date).GroupBy(u => u.Category).OrderBy(u => u.Key.Name);
-
-                foreach (var groupCategory in userCategories)
+                for (int i = 0; i < allUsers.Count(); i++)
                 {
-                    Excel.Range headerRange = worksheet.Range[worksheet.Cells[1][startRowIndex], worksheet.Cells[5][startRowIndex]];
-                    headerRange.Merge();
-                    headerRange.Value = groupCategory.Key.Name;
-                    headerRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-                    headerRange.Font.Italic = true;
+                    int startRowIndex = 1;
+                    dynamic worksheet = application.Worksheets.Item[i + 1];
+                    worksheet.Name = allUsers[i].FIO.Length > 30 ? allUsers[i].FIO.Substring(0, 30) : allUsers[i].FIO;
+
+                    worksheet.Cells[startRowIndex, 1] = "Дата платежа";
+                    worksheet.Cells[startRowIndex, 2] = "Название";
+                    worksheet.Cells[startRowIndex, 3] = "Стоимость";
+                    worksheet.Cells[startRowIndex, 4] = "Количество";
+                    worksheet.Cells[startRowIndex, 5] = "Сумма";
+
+                    dynamic colHeaderRange = worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, 5]];
+                    colHeaderRange.HorizontalAlignment = -4108;
+                    colHeaderRange.Font.Bold = true;
                     startRowIndex++;
 
-                    foreach (var sale in groupCategory)
+                    var userCategories = allUsers[i].TicketSale.OrderBy(u => u.Date).GroupBy(u => u.Category).OrderBy(u => u.Key.Name);
+
+                    foreach (var groupCategory in userCategories)
                     {
-                        worksheet.Cells[1][startRowIndex] = sale.Date.ToString("dd.MM.yyyy");
-                        worksheet.Cells[2][startRowIndex] = sale.Name;
-                        worksheet.Cells[3][startRowIndex] = sale.Price;
-                        (worksheet.Cells[3][startRowIndex] as Excel.Range).NumberFormat = "0.00";
-                        worksheet.Cells[4][startRowIndex] = sale.Num;
-                        worksheet.Cells[5][startRowIndex].Formula = $"=C{startRowIndex}*D{startRowIndex}";
-                        (worksheet.Cells[5][startRowIndex] as Excel.Range).NumberFormat = "0.00";
+                        dynamic headerRange = worksheet.Range[worksheet.Cells[startRowIndex, 1], worksheet.Cells[startRowIndex, 5]];
+                        headerRange.Merge();
+                        headerRange.Value = groupCategory.Key.Name;
+                        headerRange.HorizontalAlignment = -4108;
+                        headerRange.Font.Italic = true;
+                        startRowIndex++;
+
+                        foreach (var payment in groupCategory)
+                        {
+                            worksheet.Cells[startRowIndex, 1] = payment.Date.ToString("dd.MM.yyyy");
+                            worksheet.Cells[startRowIndex, 2] = payment.Name;
+                            worksheet.Cells[startRowIndex, 3] = payment.Price;
+                            worksheet.Cells[startRowIndex, 3].NumberFormat = "0.00";
+                            worksheet.Cells[startRowIndex, 4] = payment.Num;
+                            worksheet.Cells[startRowIndex, 5].Formula = $"=C{startRowIndex}*D{startRowIndex}";
+                            worksheet.Cells[startRowIndex, 5].NumberFormat = "0.00";
+                            startRowIndex++;
+                        }
+
+                        dynamic sumRange = worksheet.Range[worksheet.Cells[startRowIndex, 1], worksheet.Cells[startRowIndex, 4]];
+                        sumRange.Merge();
+                        sumRange.Value = "ИТОГО:";
+                        sumRange.HorizontalAlignment = -4152;
+                        sumRange.Font.Bold = true;
+
+                        worksheet.Cells[startRowIndex, 5].Formula = $"=SUM(E{startRowIndex - groupCategory.Count()}:E{startRowIndex - 1})";
+                        worksheet.Cells[startRowIndex, 5].Font.Bold = true;
+                        worksheet.Cells[startRowIndex, 5].NumberFormat = "0.00";
                         startRowIndex++;
                     }
 
-                    Excel.Range sumRange = worksheet.Range[worksheet.Cells[1][startRowIndex], worksheet.Cells[4][startRowIndex]];
-                    sumRange.Merge();
-                    sumRange.Value = "ИТОГО:";
-                    sumRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
-
-                    worksheet.Cells[5][startRowIndex].Formula = $"=SUM(E{startRowIndex - groupCategory.Count()}:E{startRowIndex - 1})";
-                    sumRange.Font.Bold = (worksheet.Cells[5][startRowIndex] as Excel.Range).Font.Bold = true;
-                    (worksheet.Cells[5][startRowIndex] as Excel.Range).NumberFormat = "0.00";
-                    startRowIndex++;
-
-                    Excel.Range rangeBorders = worksheet.Range[worksheet.Cells[1][1], worksheet.Cells[5][startRowIndex - 1]];
-                    rangeBorders.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle =
-                    rangeBorders.Borders[Excel.XlBordersIndex.xlEdgeLeft].LineStyle =
-                    rangeBorders.Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle =
-                    rangeBorders.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle =
-                    rangeBorders.Borders[Excel.XlBordersIndex.xlInsideHorizontal].LineStyle =
-                    rangeBorders.Borders[Excel.XlBordersIndex.xlInsideVertical].LineStyle = Excel.XlLineStyle.xlContinuous;
-
+                    if (startRowIndex > 2)
+                    {
+                        dynamic rangeBorders = worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[startRowIndex - 1, 5]];
+                        rangeBorders.Borders.LineStyle = 1;
+                    }
                     worksheet.Columns.AutoFit();
                 }
-            }
 
-            application.Visible = true;
-            string xlsxPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TicketSalesReport.xlsx");
-            workbook.SaveAs(xlsxPath);
+                application.Visible = true;
+                string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                workbook.SaveAs(Path.Combine(desktop, "Payments.xlsx"));
+            }
+            catch (Exception ex)
+            {
+                Core.ShowError("Ошибка выгрузки в Excel: " + ex.Message);
+            }
         }
     }
 }
