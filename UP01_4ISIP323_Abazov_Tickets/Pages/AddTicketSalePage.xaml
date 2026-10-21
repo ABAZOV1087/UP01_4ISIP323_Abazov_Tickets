@@ -1,0 +1,41 @@
+﻿<Page x:Class="UP01_4ISIP323_Abazov_Tickets.Pages.AddTicketSalePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Оформление и редактирование продажи билетов">
+    <Grid Width="550" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Название мероприятия:" Grid.Row="0" Grid.Column="0"/>
+        <TextBox x:Name="TBPaymentName" Text="{Binding Name}" Grid.Row="0" Grid.Column="1" ToolTip="Введите название мероприятия"/>
+
+        <TextBlock Text="Цена билета (руб.):" Grid.Row="1" Grid.Column="0"/>
+        <TextBox x:Name="TBAmount" Text="{Binding Price}" Grid.Row="1" Grid.Column="1" ToolTip="От 100 до 500 000 руб." PreviewTextInput="NumericOnly_PreviewTextInput"/>
+
+        <TextBlock Text="Количество билетов:" Grid.Row="2" Grid.Column="0"/>
+        <TextBox x:Name="TBCount" Text="{Binding Num}" Grid.Row="2" Grid.Column="1" ToolTip="От 1 до 50 билетов" PreviewTextInput="NumericOnly_PreviewTextInput"/>
+
+        <TextBlock Text="Дата проведения / покупки:" Grid.Row="3" Grid.Column="0"/>
+        <DatePicker x:Name="DPDate" SelectedDate="{Binding Date}" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" ToolTip="Выберите дату"/>
+
+        <TextBlock Text="Покупатель:" Grid.Row="4" Grid.Column="0"/>
+        <ComboBox x:Name="CBUser" SelectedValuePath="ID" SelectedValue="{Binding UserID}" DisplayMemberPath="FIO" Grid.Row="4" Grid.Column="1" ToolTip="Выберите покупателя"/>
+
+        <TextBlock Text="Категория мероприятия:" Grid.Row="5" Grid.Column="0"/>
+        <ComboBox x:Name="CBCategory" SelectedValuePath="ID" SelectedValue="{Binding CategoryID}" DisplayMemberPath="Name" Grid.Row="5" Grid.Column="1" ToolTip="Выберите категорию"/>
+
+        <Button x:Name="ButtonClean" Content="Очистить" Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" ToolTip="Очистить форму" Click="ButtonClean_Click"/>
+        <Button x:Name="ButtonSave" Content="Сохранить" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" ToolTip="Сохранить продажу" Click="ButtonSave_Click"/>
+    </Grid>
+</Page>

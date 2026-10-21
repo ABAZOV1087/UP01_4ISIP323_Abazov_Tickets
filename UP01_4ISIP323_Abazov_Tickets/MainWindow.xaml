@@ -1,0 +1,38 @@
+﻿<Window x:Class="UP01_4ISIP323_Abazov_Tickets.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding ElementName=MainFrame, Path=Content.Title}" 
+        Height="600" Width="950"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="45"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Style="{DynamicResource HeaderFooterGrid}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                <Image Source="/res/logo.jpg" Width="36" Height="36" Margin="0,0,10,0" ToolTip="Логотип сервиса билетов"/>
+                <Button x:Name="BtnBack" Content="Назад" Width="100" Height="30" Click="BtnBack_Click" ToolTip="Вернуться на предыдущую страницу"/>
+            </StackPanel>
+            <TextBlock Text="{Binding ElementName=MainFrame, Path=Content.Title}" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Foreground="White" FontSize="18" FontWeight="Bold"/>
+            <ComboBox x:Name="CmbTheme" Width="170" Height="30" HorizontalAlignment="Right" Margin="0,0,15,0"
+                      SelectionChanged="CmbTheme_SelectionChanged" ToolTip="Выберите тему оформления">
+                <ComboBoxItem Content="Фирменная (Светлая)"/>
+                <ComboBoxItem Content="Альтернативная (Темная)"/>
+            </ComboBox>
+        </Grid>
+
+        <Frame x:Name="MainFrame" Grid.Row="1" NavigationUIVisibility="Hidden" ContentRendered="MainFrame_ContentRendered"/>
+
+        <Grid Grid.Row="2" Style="{DynamicResource HeaderFooterGrid}">
+            <TextBlock Text="Сервис продажи и покупки билетов на мероприятия" Foreground="White" Margin="15,0,0,0" HorizontalAlignment="Left"/>
+            <TextBlock x:Name="DateTimeNow" Foreground="White" HorizontalAlignment="Right" Margin="0,0,15,0" VerticalAlignment="Center"/>
+        </Grid>
+    </Grid>
+</Window>

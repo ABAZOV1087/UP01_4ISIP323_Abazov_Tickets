@@ -1,0 +1,20 @@
+﻿<Page x:Class="UP01_4ISIP323_Abazov_Tickets.Pages.AdminPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Панель администратора (7 таблиц БД)">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Width="750">
+            <TextBlock Text="Управление таблицами базы данных билетного сервиса" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            <WrapPanel HorizontalAlignment="Center">
+                <Button x:Name="BtnTab1" Content="1. Пользователи" Width="210" Height="42" ToolTip="Таблица User" Click="BtnTab1_Click"/>
+                <Button x:Name="BtnTab2" Content="2. Категории" Width="210" Height="42" ToolTip="Таблица Category" Click="BtnTab2_Click"/>
+                <Button x:Name="BtnTab3" Content="3. Площадки" Width="210" Height="42" ToolTip="Таблица Venue" Click="BtnTab3_Click"/>
+                <Button x:Name="BtnTab4" Content="4. Организаторы" Width="210" Height="42" ToolTip="Таблица Organizer" Click="BtnTab4_Click"/>
+                <Button x:Name="BtnTab5" Content="5. Мероприятия" Width="210" Height="42" ToolTip="Таблица Event" Click="BtnTab5_Click"/>
+                <Button x:Name="BtnTab6" Content="6. Промокоды" Width="210" Height="42" ToolTip="Таблица Promocode" Click="BtnTab6_Click"/>
+                <Button x:Name="BtnTab7" Content="7. Продажи билетов" Width="210" Height="42" ToolTip="Таблица TicketSale" Click="BtnTab7_Click"/>
+                <Button x:Name="BtnDiagrams" Content="📊 Диаграммы и Отчеты" Width="210" Height="42" ToolTip="Статистика и экспорт в Word / Excel" Click="BtnDiagrams_Click"/>
+            </WrapPanel>
+        </StackPanel>
+    </Grid>
+</Page>

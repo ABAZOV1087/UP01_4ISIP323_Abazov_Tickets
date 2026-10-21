@@ -1,0 +1,31 @@
+﻿<Page x:Class="UP01_4ISIP323_Abazov_Tickets.Pages.DiagrammPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:charts="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
+      Title="Аналитика продаж билетов и выгрузка отчетов">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+            <TextBlock Text="Покупатель:" Margin="5"/>
+            <ComboBox x:Name="CmbUser" Width="180" DisplayMemberPath="FIO" Margin="5" ToolTip="Выберите покупателя" SelectionChanged="UpdateChart"/>
+
+            <TextBlock Text="Тип диаграммы:" Margin="5"/>
+            <ComboBox x:Name="CmbDiagram" Width="150" Margin="5" ToolTip="Выберите вид графика" SelectionChanged="UpdateChart"/>
+
+            <Button x:Name="BtnExportExcel" Content="Экспорт в Excel" Width="140" ToolTip="Выгрузить полный отчет в Excel" Click="BtnExportExcel_Click"/>
+            <Button x:Name="BtnExportWord" Content="Экспорт в Word" Width="140" ToolTip="Выгрузить отчет в Word и PDF" Click="BtnExportWord_Click"/>
+        </StackPanel>
+
+        <WindowsFormsHost Grid.Row="1" Margin="10">
+            <charts:Chart x:Name="ChartPayments">
+                <charts:Chart.Legends>
+                    <charts:Legend/>
+                </charts:Chart.Legends>
+            </charts:Chart>
+        </WindowsFormsHost>
+    </Grid>
+</Page>

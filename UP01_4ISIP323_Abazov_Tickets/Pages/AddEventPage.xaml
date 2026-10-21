@@ -1,0 +1,47 @@
+﻿<Page x:Class="UP01_4ISIP323_Abazov_Tickets.Pages.AddEventPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Добавление и редактирование мероприятия">
+    <Grid Width="550" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="55"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Название мероприятия:" Grid.Row="0" Grid.Column="0"/>
+        <TextBox x:Name="TbTitle" Text="{Binding Title}" Grid.Row="0" Grid.Column="1" ToolTip="Введите название мероприятия"/>
+
+        <TextBlock Text="Категория:" Grid.Row="1" Grid.Column="0"/>
+        <ComboBox x:Name="CmbCategory" SelectedValuePath="ID" SelectedValue="{Binding CategoryID}" DisplayMemberPath="Name" Grid.Row="1" Grid.Column="1" ToolTip="Выберите категорию"/>
+
+        <TextBlock Text="Площадка:" Grid.Row="2" Grid.Column="0"/>
+        <ComboBox x:Name="CmbVenue" SelectedValuePath="ID" SelectedValue="{Binding VenueID}" DisplayMemberPath="Name" Grid.Row="2" Grid.Column="1" ToolTip="Выберите площадку"/>
+
+        <TextBlock Text="Организатор:" Grid.Row="3" Grid.Column="0"/>
+        <ComboBox x:Name="CmbOrganizer" SelectedValuePath="ID" SelectedValue="{Binding OrganizerID}" DisplayMemberPath="Name" Grid.Row="3" Grid.Column="1" ToolTip="Выберите организатора"/>
+
+        <TextBlock Text="Дата проведения:" Grid.Row="4" Grid.Column="0"/>
+        <DatePicker SelectedDate="{Binding EventDate}" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" ToolTip="Выберите дату проведения"/>
+
+        <TextBlock Text="Возрастной рейтинг:" Grid.Row="5" Grid.Column="0"/>
+        <ComboBox x:Name="CmbAge" Text="{Binding AgeLimit}" Grid.Row="5" Grid.Column="1" ToolTip="Выберите возрастное ограничение">
+            <ComboBoxItem Content="0+"/>
+            <ComboBoxItem Content="6+"/>
+            <ComboBoxItem Content="12+"/>
+            <ComboBoxItem Content="16+"/>
+            <ComboBoxItem Content="18+"/>
+        </ComboBox>
+
+        <Button Content="Очистить" Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" ToolTip="Очистить форму" Click="ButtonClean_Click"/>
+        <Button Content="Сохранить" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" ToolTip="Сохранить мероприятие" Click="ButtonSave_Click"/>
+    </Grid>
+</Page>

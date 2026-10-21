@@ -1,0 +1,22 @@
+﻿<Page x:Class="UP01_4ISIP323_Abazov_Tickets.Pages.AddOrganizerPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Добавление и редактирование организатора">
+    <Grid Width="500" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel>
+            <TextBlock Text="Наименование организатора:"/>
+            <TextBox x:Name="TbName" Text="{Binding Name}" ToolTip="Название компании или ИП" Margin="0,5,0,10"/>
+
+            <TextBlock Text="Контактный телефон:"/>
+            <TextBox x:Name="TbPhone" Text="{Binding Phone}" MaxLength="11" ToolTip="Телефон (только цифры, начиная с 8)" PreviewTextInput="TbPhone_PreviewTextInput" Margin="0,5,0,10"/>
+
+            <TextBlock Text="Электронная почта (Email):"/>
+            <TextBox x:Name="TbEmail" Text="{Binding Email}" ToolTip="Контактный Email" Margin="0,5,0,15"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Очистить" ToolTip="Очистить поля" Click="ButtonClean_Click"/>
+                <Button Content="Сохранить" ToolTip="Сохранить организатора" Click="ButtonSave_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

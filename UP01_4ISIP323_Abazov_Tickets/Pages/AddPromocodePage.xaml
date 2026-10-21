@@ -1,0 +1,22 @@
+﻿<Page x:Class="UP01_4ISIP323_Abazov_Tickets.Pages.AddPromocodePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Добавление и редактирование промокода">
+    <Grid Width="480" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel>
+            <TextBlock Text="Код промокода:"/>
+            <TextBox x:Name="TbCode" Text="{Binding Code}" ToolTip="Например: SALE20" Margin="0,5,0,10"/>
+
+            <TextBlock Text="Процент скидки (от 1 до 90%):"/>
+            <TextBox x:Name="TbDiscount" Text="{Binding DiscountPercent}" ToolTip="Число от 1 до 90" PreviewTextInput="TbDiscount_PreviewTextInput" Margin="0,5,0,10"/>
+
+            <TextBlock Text="Срок действия до:"/>
+            <DatePicker SelectedDate="{Binding ValidUntil}" Margin="0,5,0,15" ToolTip="Выберите дату окончания действия"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Очистить" ToolTip="Очистить поля" Click="ButtonClean_Click"/>
+                <Button Content="Сохранить" ToolTip="Сохранить промокод" Click="ButtonSave_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

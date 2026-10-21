@@ -1,0 +1,22 @@
+﻿<Page x:Class="UP01_4ISIP323_Abazov_Tickets.Pages.AddVenuePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Добавление и редактирование площадки">
+    <Grid Width="500" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel>
+            <TextBlock Text="Название площадки:"/>
+            <TextBox x:Name="TbName" Text="{Binding Name}" ToolTip="Введите название концертной площадки" Margin="0,5,0,10"/>
+
+            <TextBlock Text="Адрес:"/>
+            <TextBox x:Name="TbAddress" Text="{Binding Address}" ToolTip="Введите полный адрес" Margin="0,5,0,10"/>
+
+            <TextBlock Text="Вместимость (чел.):"/>
+            <TextBox x:Name="TbCapacity" Text="{Binding Capacity}" ToolTip="От 10 до 100 000 человек" PreviewTextInput="TbCapacity_PreviewTextInput" Margin="0,5,0,15"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Очистить" ToolTip="Очистить поля" Click="ButtonClean_Click"/>
+                <Button Content="Сохранить" ToolTip="Сохранить площадку" Click="ButtonSave_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

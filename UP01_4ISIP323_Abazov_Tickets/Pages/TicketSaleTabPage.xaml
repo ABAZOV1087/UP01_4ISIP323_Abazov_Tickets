@@ -1,0 +1,49 @@
+﻿<Page x:Class="UP01_4ISIP323_Abazov_Tickets.Pages.TicketSaleTabPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Учет продаж билетов на мероприятия">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="65"/>
+        </Grid.RowDefinitions>
+
+        <WrapPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+            <TextBlock Text="Поиск мероприятия:" Margin="5"/>
+            <TextBox x:Name="TbSearchEvent" Width="160" Margin="5" ToolTip="Введите название мероприятия" TextChanged="Filter_Changed"/>
+
+            <TextBlock Text="Категория:" Margin="5"/>
+            <ComboBox x:Name="CmbFilterCategory" Width="160" Margin="5" DisplayMemberPath="Name" ToolTip="Фильтр по категории" SelectionChanged="Filter_Changed"/>
+
+            <TextBlock Text="Сортировка по цене:" Margin="5"/>
+            <ComboBox x:Name="CmbSortPrice" Width="150" SelectedIndex="0" Margin="5" ToolTip="Сортировка по цене билета" SelectionChanged="Filter_Changed">
+                <ComboBoxItem Content="По возрастанию"/>
+                <ComboBoxItem Content="По убыванию"/>
+            </ComboBox>
+
+            <Button Content="Сброс" Width="100" ToolTip="Сбросить фильтры" Click="BtnReset_Click"/>
+        </WrapPanel>
+
+        <DataGrid Grid.Row="1" x:Name="DataGridTicketSale" AutoGenerateColumns="False" IsReadOnly="True" Margin="10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Дата покупки" Binding="{Binding Date, StringFormat=dd.MM.yyyy}" Width="110"/>
+                <DataGridTextColumn Header="Покупатель" Binding="{Binding User.FIO}" Width="180"/>
+                <DataGridTextColumn Header="Мероприятие" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Кол-во билетов" Binding="{Binding Num}" Width="110"/>
+                <DataGridTextColumn Header="Цена билета" Binding="{Binding Price}" Width="110"/>
+                <DataGridTextColumn Header="Категория" Binding="{Binding Category.Name}" Width="150"/>
+                <DataGridTemplateColumn Width="160">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button x:Name="ButtonEdit" Content="Редактировать" Width="135" Height="28" ToolTip="Редактировать билет" Click="ButtonEdit_Click"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Grid.Row="2" x:Name="ButtonAdd" Content="Добавить" HorizontalAlignment="Left" Margin="20,0,0,0" ToolTip="Оформить новую продажу билета" Click="ButtonAdd_Click"/>
+        <Button Grid.Row="2" x:Name="ButtonDel" Content="Удалить" HorizontalAlignment="Right" Margin="0,0,20,0" ToolTip="Удалить выбранные продажи" Click="ButtonDel_Click"/>
+    </Grid>
+</Page>
