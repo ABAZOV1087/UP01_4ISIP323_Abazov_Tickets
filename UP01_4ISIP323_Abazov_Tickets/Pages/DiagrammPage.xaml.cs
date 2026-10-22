@@ -166,7 +166,11 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
             {
                 var allUsers = Core.Context.User.OrderBy(u => u.FIO).ToList();
                 Type excelType = Type.GetTypeFromProgID("Excel.Application");
-                if (excelType == null) { Core.ShowError("Microsoft Excel не установлен!"); return; }
+                if (excelType == null)
+                {
+                    Core.ShowError("Microsoft Excel не установлен!");
+                    return;
+                }
 
                 dynamic application = Activator.CreateInstance(excelType);
                 application.SheetsInNewWorkbook = allUsers.Count();
@@ -176,7 +180,8 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
                 {
                     int startRowIndex = 1;
                     dynamic worksheet = application.Worksheets.Item[i + 1];
-                    worksheet.Name = allUsers[i].FIO.Length > 30 ? allUsers[i].FIO.Substring(0, 30) : allUsers[i].FIO;
+                    string sheetName = allUsers[i].FIO.Length > 30 ? allUsers[i].FIO.Substring(0, 30) : allUsers[i].FIO;
+                    worksheet.Name = sheetName;
 
                     worksheet.Cells[startRowIndex, 1] = "Дата платежа";
                     worksheet.Cells[startRowIndex, 2] = "Название";
@@ -189,7 +194,10 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
                     colHeaderRange.Font.Bold = true;
                     startRowIndex++;
 
-                    var userCategories = allUsers[i].TicketSale.OrderBy(u => u.Date).GroupBy(u => u.Category).OrderBy(u => u.Key.Name);
+                    var userCategories = allUsers[i].TicketSale
+                        .OrderBy(u => u.Date)
+                        .GroupBy(u => u.Category)
+                        .OrderBy(u => u.Key.Name);
 
                     foreach (var groupCategory in userCategories)
                     {
@@ -200,15 +208,15 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
                         headerRange.Font.Italic = true;
                         startRowIndex++;
 
+                        int categoryFirstRow = startRowIndex;
+
                         foreach (var payment in groupCategory)
                         {
                             worksheet.Cells[startRowIndex, 1] = payment.Date.ToString("dd.MM.yyyy");
                             worksheet.Cells[startRowIndex, 2] = payment.Name;
-                            worksheet.Cells[startRowIndex, 3] = payment.Price;
-                            worksheet.Cells[startRowIndex, 3].NumberFormat = "0.00";
-                            worksheet.Cells[startRowIndex, 4] = payment.Num;
+                            worksheet.Cells[startRowIndex, 3] = (double)payment.Price;
+                            worksheet.Cells[startRowIndex, 4] = (double)payment.Num;
                             worksheet.Cells[startRowIndex, 5].Formula = $"=C{startRowIndex}*D{startRowIndex}";
-                            worksheet.Cells[startRowIndex, 5].NumberFormat = "0.00";
                             startRowIndex++;
                         }
 
@@ -218,9 +226,8 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
                         sumRange.HorizontalAlignment = -4152;
                         sumRange.Font.Bold = true;
 
-                        worksheet.Cells[startRowIndex, 5].Formula = $"=SUM(E{startRowIndex - groupCategory.Count()}:E{startRowIndex - 1})";
+                        worksheet.Cells[startRowIndex, 5].Formula = $"=SUM(E{categoryFirstRow}:E{startRowIndex - 1})";
                         worksheet.Cells[startRowIndex, 5].Font.Bold = true;
-                        worksheet.Cells[startRowIndex, 5].NumberFormat = "0.00";
                         startRowIndex++;
                     }
 
@@ -233,13 +240,17 @@ namespace UP01_4ISIP323_Abazov_Tickets.Pages
                 }
 
                 application.Visible = true;
+                application.DisplayAlerts = false;
                 string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 workbook.SaveAs(Path.Combine(desktop, "Payments.xlsx"));
+                application.DisplayAlerts = true;
             }
             catch (Exception ex)
             {
                 Core.ShowError("Ошибка выгрузки в Excel: " + ex.Message);
             }
         }
+
+
     }
 }

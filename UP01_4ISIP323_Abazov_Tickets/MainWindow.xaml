@@ -23,6 +23,7 @@
                        Foreground="White" FontSize="18" FontWeight="Bold"/>
             <ComboBox x:Name="CmbTheme" Width="170" Height="30" HorizontalAlignment="Right" Margin="0,0,15,0"
                       SelectionChanged="CmbTheme_SelectionChanged" ToolTip="Выберите тему оформления">
+                
                 <ComboBoxItem Content="Фирменная (Светлая)"/>
                 <ComboBoxItem Content="Альтернативная (Темная)"/>
             </ComboBox>
